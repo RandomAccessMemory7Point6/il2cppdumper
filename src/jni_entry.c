@@ -643,31 +643,13 @@ static void *dump_thread(void *arg) {
 
     char output_dir[PATH_MAX] = {0};
 
-    /* Strategy 1: JNI‑based getFilesDir. */
-    {
-        char files_dir[PATH_MAX] = {0};
-        if (get_files_dir_jni(files_dir, sizeof(files_dir))) {
-            snprintf(output_dir, sizeof(output_dir),
-                     "%s/il2cpp_dump", files_dir);
-            mkdir(output_dir, 0755);   /* best effort */
-            LOGI("Output dir (JNI): %s", output_dir);
-        }
-    }
-
-    /* Strategy 2: Construct directory from package name. */
-    if (!output_dir[0] && pkg[0] && strcmp(pkg, "unknown") != 0) {
-        snprintf(output_dir, sizeof(output_dir),
-                 "/data/data/%s/files/il2cpp_dump", pkg);
-        mkdir_p(output_dir);
-        LOGI("Output dir (cmdline): %s", output_dir);
-    }
-
-    /* Strategy 3: Fallback to /sdcard. */
-    if (!output_dir[0]) {
-        snprintf(output_dir, sizeof(output_dir), "/sdcard/il2cpp_dump");
-        mkdir_p(output_dir);
-        LOGW("Output dir (sdcard fallback): %s", output_dir);
-    }
+    /* HARDCODED: write to readable external storage */
+    snprintf(output_dir, sizeof(output_dir),
+             "/storage/emulated/0/Android/data/"
+             "com.stickman.warriors.stickwarriors.dragon.shadow.fight"
+             "/files/il2cpp_dump");
+    mkdir_p(output_dir);
+    LOGI("Output dir (hardcoded external): %s", output_dir);
 
     /* Obtain a handle to resolve IL2CPP API functions.
      * Try: already loaded libil2cpp.so, then explicit dlopen, then global. */
